@@ -1,0 +1,266 @@
+/* ==========================================================
+   Catalogue de bibliothèque - Feuille de style
+   Approche mobile d'abord : les styles de base ciblent le
+   téléphone, puis les @media ajoutent des colonnes sur les
+   écrans plus larges.
+   ========================================================== */
+
+/* ---------- 1. Variables CSS (couleurs et espacements) ---------- */
+:root {
+  /* Couleurs : texte foncé sur fond clair pour un bon contraste */
+  --couleur-fond: #f4f6fb;
+  --couleur-surface: #ffffff;
+  --couleur-texte: #1b2430;
+  --couleur-texte-doux: #475569;
+  --couleur-principale: #1f3a68;
+  --couleur-principale-hover: #162a4d;
+  --couleur-bordure: #d5dbe5;
+  --couleur-focus: #0b57d0;
+
+  /* Étiquettes : fond clair + texte foncé de la même teinte */
+  --couleur-dispo-fond: #dcf5e3;
+  --couleur-dispo-texte: #14532d;
+  --couleur-emprunte-fond: #fde2e1;
+  --couleur-emprunte-texte: #7f1d1d;
+
+  /* Espacements */
+  --espace-1: 0.25rem;
+  --espace-2: 0.5rem;
+  --espace-3: 1rem;
+  --espace-4: 1.5rem;
+  --espace-5: 2rem;
+
+  --rayon: 8px;
+  --ombre: 0 2px 6px rgba(27, 36, 48, 0.12);
+}
+
+/* ---------- 2. Base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box; /* width inclut padding et bordure */
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  color: var(--couleur-texte);
+  background: var(--couleur-fond);
+}
+
+h1, h2, h3 {
+  line-height: 1.2;
+}
+
+/* Contour visible quand on navigue au clavier (touche Tab) */
+:focus-visible {
+  outline: 3px solid var(--couleur-focus);
+  outline-offset: 2px;
+}
+
+/* ---------- 3. En-tête et navigation ---------- */
+header {
+  background: var(--couleur-principale);
+  color: #ffffff;
+  padding: var(--espace-3);
+}
+
+header h1 {
+  margin: 0 0 var(--espace-2);
+  font-size: 1.5rem;
+}
+
+nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espace-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+nav a {
+  color: #ffffff;
+  text-decoration: none;
+  padding: var(--espace-1) 0;
+  border-bottom: 2px solid transparent;
+}
+
+nav a:hover {
+  border-bottom-color: #ffffff;
+}
+
+/* Sur fond sombre, le contour de focus doit être clair */
+header :focus-visible {
+  outline-color: #ffffff;
+}
+
+/* ---------- 4. Contenu principal ---------- */
+main {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: var(--espace-3);
+}
+
+section {
+  margin-bottom: var(--espace-5);
+}
+
+/* ---------- 5. Cartes de livres (grille adaptative) ---------- */
+/* Mobile : une seule colonne */
+#liste-livres {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espace-3);
+}
+
+.carte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-2);
+  padding: var(--espace-3);
+  background: var(--couleur-surface);
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.carte:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(27, 36, 48, 0.18);
+}
+
+.carte__titre {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.carte__auteur,
+.carte__meta {
+  margin: 0;
+  color: var(--couleur-texte-doux);
+}
+
+.carte__meta {
+  text-transform: capitalize; /* "roman" devient "Roman" */
+}
+
+/* Étiquettes : le texte dit l'état, la couleur le renforce */
+.etiquette {
+  align-self: flex-start;
+  padding: var(--espace-1) var(--espace-3);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.etiquette--disponible {
+  background: var(--couleur-dispo-fond);
+  color: var(--couleur-dispo-texte);
+}
+
+.etiquette--emprunte {
+  background: var(--couleur-emprunte-fond);
+  color: var(--couleur-emprunte-texte);
+}
+
+/* ---------- 6. Boutons ---------- */
+button {
+  font: inherit;
+  padding: var(--espace-2) var(--espace-3);
+  color: #ffffff;
+  background: var(--couleur-principale);
+  border: none;
+  border-radius: var(--rayon);
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--couleur-principale-hover);
+}
+
+/* Bouton désactivé : visiblement grisé et non cliquable */
+button:disabled {
+  background: #cbd2dd;
+  color: #475569;
+  cursor: not-allowed;
+}
+
+/* ---------- 7. Formulaire d'ajout ---------- */
+form {
+  display: grid;
+  gap: var(--espace-3);
+  max-width: 32rem;
+  padding: var(--espace-3);
+  background: var(--couleur-surface);
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+}
+
+form label {
+  display: block;
+  margin-bottom: var(--espace-1);
+  font-weight: 600;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: var(--espace-2);
+  font: inherit;
+  border: 1px solid var(--couleur-texte-doux);
+  border-radius: var(--rayon);
+  background: #ffffff;
+}
+
+/* La case à cocher et son label sont sur la même ligne */
+form div:has(input[type="checkbox"]) {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-2);
+}
+
+form div:has(input[type="checkbox"]) label {
+  margin: 0;
+}
+
+/* ---------- 8. Pied de page ---------- */
+footer {
+  padding: var(--espace-3);
+  text-align: center;
+  color: var(--couleur-texte-doux);
+  border-top: 1px solid var(--couleur-bordure);
+}
+
+/* ---------- 9. Points de rupture (mobile d'abord) ---------- */
+/* Tablette : deux colonnes */
+@media (min-width: 600px) {
+  #liste-livres {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Ordinateur : trois colonnes */
+@media (min-width: 960px) {
+  #liste-livres {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  header h1 {
+    font-size: 2rem;
+  }
+}
+
+/* Respecte les personnes qui désactivent les animations */
+@media (prefers-reduced-motion: reduce) {
+  .carte {
+    transition: none;
+  }
+
+  .carte:hover {
+    transform: none;
+  }
+}
