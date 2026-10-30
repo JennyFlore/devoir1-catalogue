@@ -199,13 +199,14 @@ form {
   border-radius: var(--rayon);
 }
 
-form label {
+label {
   display: block;
   margin-bottom: var(--espace-1);
   font-weight: 600;
 }
 
 input[type="text"],
+input[type="search"],
 input[type="number"],
 select {
   width: 100%;
@@ -217,14 +218,57 @@ select {
 }
 
 /* La case à cocher et son label sont sur la même ligne */
-form div:has(input[type="checkbox"]) {
+div:has(> input[type="checkbox"]) {
   display: flex;
   align-items: center;
   gap: var(--espace-2);
 }
 
-form div:has(input[type="checkbox"]) label {
+div:has(> input[type="checkbox"]) label {
   margin: 0;
+}
+
+/* ---------- 7b. Barre d'outils du catalogue ---------- */
+/* Mobile : les commandes s'empilent */
+.outils {
+  display: grid;
+  gap: var(--espace-3);
+  margin-bottom: var(--espace-3);
+  padding: var(--espace-3);
+  background: var(--couleur-surface);
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+}
+
+#compteur {
+  margin: 0 0 var(--espace-3);
+  font-weight: 600;
+}
+
+#message-vide {
+  padding: var(--espace-4);
+  text-align: center;
+  color: var(--couleur-texte-doux);
+  border: 2px dashed var(--couleur-bordure);
+  border-radius: var(--rayon);
+}
+
+/* Bouton secondaire (supprimer) : contour rouge, fond blanc */
+.bouton-danger {
+  color: var(--couleur-emprunte-texte);
+  background: #ffffff;
+  border: 1px solid var(--couleur-emprunte-texte);
+}
+
+.bouton-danger:hover:not(:disabled) {
+  background: var(--couleur-emprunte-fond);
+}
+
+.carte__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espace-2);
+  margin-top: auto; /* colle les boutons en bas de la carte */
 }
 
 /* ---------- 8. Pied de page ---------- */
@@ -241,12 +285,21 @@ footer {
   #liste-livres {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .outils {
+    grid-template-columns: repeat(2, 1fr);
+    align-items: end;
+  }
 }
 
 /* Ordinateur : trois colonnes */
 @media (min-width: 960px) {
   #liste-livres {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .outils {
+    grid-template-columns: 2fr 1fr 1fr auto;
   }
 
   header h1 {

@@ -21,7 +21,47 @@
   <main>
     <section id="catalogue" aria-labelledby="titre-catalogue">
       <h2 id="titre-catalogue">Catalogue</h2>
-      <!-- Les cartes de livres seront générées par JavaScript (Partie 3) -->
+
+      <!-- Recherche, filtres et tri : tous utilisables ensemble -->
+      <div class="outils" role="search">
+        <div>
+          <label for="recherche">Rechercher (titre ou auteur)</label>
+          <input type="search" id="recherche" placeholder="Ex. : camus">
+        </div>
+
+        <div>
+          <label for="filtre-categorie">Catégorie</label>
+          <select id="filtre-categorie">
+            <option value="">Toutes</option>
+            <option value="roman">Roman</option>
+            <option value="science">Science</option>
+            <option value="histoire">Histoire</option>
+            <option value="informatique">Informatique</option>
+            <option value="autre">Autre</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="tri">Trier par</label>
+          <select id="tri">
+            <option value="titre-asc">Titre (A → Z)</option>
+            <option value="titre-desc">Titre (Z → A)</option>
+            <option value="annee-asc">Année (croissant)</option>
+            <option value="annee-desc">Année (décroissant)</option>
+          </select>
+        </div>
+
+        <div>
+          <input type="checkbox" id="filtre-disponibles">
+          <label for="filtre-disponibles">Disponibles seulement</label>
+        </div>
+      </div>
+
+      <!-- aria-live : le lecteur d'écran annonce le nombre de résultats -->
+      <p id="compteur" aria-live="polite"></p>
+      <p id="message-vide" hidden>Aucun livre ne correspond à votre recherche.</p>
+
+      <!-- Les cartes de livres sont générées par JavaScript (js/app.js) -->
       <div id="liste-livres"></div>
     </section>
 
