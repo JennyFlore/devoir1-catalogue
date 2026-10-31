@@ -57,8 +57,11 @@
         </div>
       </div>
 
-      <!-- aria-live : le lecteur d'écran annonce le nombre de résultats -->
-      <p id="compteur" aria-live="polite"></p>
+      <div class="barre-resultats">
+        <!-- aria-live : le lecteur d'écran annonce le nombre de résultats -->
+        <p id="compteur" aria-live="polite"></p>
+        <button type="button" id="bouton-reinitialiser" class="bouton-danger">Réinitialiser</button>
+      </div>
       <p id="message-vide" hidden>Aucun livre ne correspond à votre recherche.</p>
 
       <!-- Les cartes de livres sont générées par JavaScript (js/app.js) -->
@@ -70,22 +73,25 @@
       <form id="formulaire-ajout" novalidate>
         <div>
           <label for="titre">Titre</label>
-          <input type="text" id="titre" name="titre" required>
+          <input type="text" id="titre" name="titre" required aria-describedby="erreur-titre">
+          <p class="erreur" id="erreur-titre" aria-live="polite"></p>
         </div>
 
         <div>
           <label for="auteur">Auteur</label>
-          <input type="text" id="auteur" name="auteur" required>
+          <input type="text" id="auteur" name="auteur" required aria-describedby="erreur-auteur">
+          <p class="erreur" id="erreur-auteur" aria-live="polite"></p>
         </div>
 
         <div>
           <label for="annee">Année de publication</label>
-          <input type="number" id="annee" name="annee" required>
+          <input type="number" id="annee" name="annee" required aria-describedby="erreur-annee">
+          <p class="erreur" id="erreur-annee" aria-live="polite"></p>
         </div>
 
         <div>
           <label for="categorie">Catégorie</label>
-          <select id="categorie" name="categorie" required>
+          <select id="categorie" name="categorie" required aria-describedby="erreur-categorie">
             <option value="">-- Choisir une catégorie --</option>
             <option value="roman">Roman</option>
             <option value="science">Science</option>
@@ -93,6 +99,7 @@
             <option value="informatique">Informatique</option>
             <option value="autre">Autre</option>
           </select>
+          <p class="erreur" id="erreur-categorie" aria-live="polite"></p>
         </div>
 
         <div>

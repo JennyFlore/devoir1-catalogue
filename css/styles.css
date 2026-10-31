@@ -240,9 +240,35 @@ div:has(> input[type="checkbox"]) label {
   border-radius: var(--rayon);
 }
 
+/* Compteur à gauche, bouton Réinitialiser à droite */
+.barre-resultats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espace-2);
+  margin-bottom: var(--espace-3);
+}
+
 #compteur {
-  margin: 0 0 var(--espace-3);
+  margin: 0;
   font-weight: 600;
+}
+
+/* Messages d'erreur sous les champs du formulaire */
+.erreur {
+  margin: 0;
+  color: #b91c1c;
+  font-size: 0.9rem;
+}
+
+.erreur:not(:empty) {
+  margin-top: var(--espace-1);
+}
+
+[aria-invalid="true"] {
+  border-color: #b91c1c;
+  border-width: 2px;
 }
 
 #message-vide {
