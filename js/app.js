@@ -1,10 +1,40 @@
 // Catalogue de bibliothèque : affichage, recherche, filtres, tri,
-// ajout et suppression. (Validation et localStorage : Partie 4.)
+// ajout, suppression, validation du formulaire et sauvegarde (localStorage).
 
-// ---------- Données et éléments de la page ----------
+const CLE_STOCKAGE = "catalogue-livres";
+const ANNEE_MIN = 1450;
+const CHAMPS_FORMULAIRE = ["titre", "auteur", "annee", "categorie"];
 
-// Copie du tableau de départ : on modifie la copie, jamais l'original
-let livres = [...livresDeDepart];
+// ---------- Données et sauvegarde ----------
+
+// Copie des livres de départ. Les objets sont copiés un par un : sans cela,
+// emprunter un livre modifierait aussi le tableau de départ.
+function copierLivresDeDepart() {
+  return livresDeDepart.map((livre) => ({ ...livre }));
+}
+
+// Lit la liste sauvegardée ; sinon (ou si elle est illisible), données de départ
+function chargerLivres() {
+  try {
+    const sauvegarde = JSON.parse(localStorage.getItem(CLE_STOCKAGE));
+    if (Array.isArray(sauvegarde)) return sauvegarde;
+  } catch {
+    // JSON invalide ou localStorage indisponible : on repart de zéro
+  }
+  return copierLivresDeDepart();
+}
+
+function sauvegarderLivres() {
+  try {
+    localStorage.setItem(CLE_STOCKAGE, JSON.stringify(livres));
+  } catch {
+    // Stockage plein ou bloqué : l'application continue sans sauvegarde
+  }
+}
+
+let livres = chargerLivres();
+
+// ---------- Éléments de la page ----------
 
 const conteneurLivres = document.getElementById("liste-livres");
 const champRecherche = document.getElementById("recherche");
@@ -14,6 +44,7 @@ const selectTri = document.getElementById("tri");
 const compteur = document.getElementById("compteur");
 const messageVide = document.getElementById("message-vide");
 const formulaire = document.getElementById("formulaire-ajout");
+const boutonReinitialiser = document.getElementById("bouton-reinitialiser");
 
 // ---------- Recherche, filtres et tri ----------
 
@@ -110,13 +141,19 @@ function mettreAJourAffichage() {
   messageVide.hidden = n !== 0;
 }
 
-// ---------- Actions : emprunter, supprimer, ajouter ----------
+// Après toute modification des données : sauvegarder puis réafficher
+function enregistrerEtAfficher() {
+  sauvegarderLivres();
+  mettreAJourAffichage();
+}
+
+// ---------- Actions : emprunter, supprimer, réinitialiser ----------
 
 function emprunterLivre(id) {
   const livre = livres.find((l) => l.id === id);
   if (livre) {
     livre.disponible = false;
-    mettreAJourAffichage();
+    enregistrerEtAfficher();
   }
 }
 
@@ -128,28 +165,83 @@ function supprimerLivre(id) {
   if (!confirm(`Supprimer « ${livre.titre} » du catalogue ?`)) return;
 
   livres = livres.filter((l) => l.id !== id);
-  mettreAJourAffichage();
+  enregistrerEtAfficher();
 }
 
-// Nouvel identifiant = plus grand id existant + 1
-function genererId() {
-  return livres.reduce((max, l) => Math.max(max, l.id), 0) + 1;
+function reinitialiserLivres() {
+  if (!confirm("Remettre les livres de départ ? Vos ajouts et suppressions seront perdus.")) return;
+
+  livres = copierLivresDeDepart();
+  enregistrerEtAfficher();
+}
+
+// ---------- Formulaire : validation et ajout ----------
+
+// Valeur d'un champ du formulaire, sans espaces au début ni à la fin
+function lireChamp(idChamp) {
+  return document.getElementById(idChamp).value.trim();
+}
+
+// Affiche (ou efface, si message vide) l'erreur sous un champ
+function afficherErreur(idChamp, message) {
+  document.getElementById(`erreur-${idChamp}`).textContent = message;
+  document.getElementById(idChamp).setAttribute("aria-invalid", message ? "true" : "false");
+}
+
+// Renvoie un objet { champ: message } ; il est vide si tout est valide
+function validerFormulaire() {
+  const erreurs = {};
+  const anneeCourante = new Date().getFullYear();
+
+  if (lireChamp("titre").length < 2) {
+    erreurs.titre = "Le titre est obligatoire (au moins 2 caractères).";
+  }
+  if (lireChamp("auteur").length < 2) {
+    erreurs.auteur = "L'auteur est obligatoire (au moins 2 caractères).";
+  }
+
+  const anneeSaisie = lireChamp("annee");
+  const annee = Number(anneeSaisie);
+  if (anneeSaisie === "" || !Number.isInteger(annee) || annee < ANNEE_MIN || annee > anneeCourante) {
+    erreurs.annee = `L'année doit être comprise entre ${ANNEE_MIN} et ${anneeCourante}.`;
+  }
+
+  if (lireChamp("categorie") === "") {
+    erreurs.categorie = "Veuillez choisir une catégorie.";
+  }
+
+  return erreurs;
 }
 
 function ajouterLivre(evenement) {
   evenement.preventDefault(); // empêche le rechargement de la page
 
+  const erreurs = validerFormulaire();
+  CHAMPS_FORMULAIRE.forEach((id) => afficherErreur(id, erreurs[id] || ""));
+
+  // Au moins une erreur : on met le curseur sur le premier champ fautif
+  const premierChampInvalide = CHAMPS_FORMULAIRE.find((id) => erreurs[id]);
+  if (premierChampInvalide) {
+    document.getElementById(premierChampInvalide).focus();
+    return;
+  }
+
   livres.push({
     id: genererId(),
-    titre: document.getElementById("titre").value.trim(),
-    auteur: document.getElementById("auteur").value.trim(),
-    annee: Number(document.getElementById("annee").value),
-    categorie: document.getElementById("categorie").value,
+    titre: lireChamp("titre"),
+    auteur: lireChamp("auteur"),
+    annee: Number(lireChamp("annee")),
+    categorie: lireChamp("categorie"),
     disponible: document.getElementById("disponible").checked
   });
 
   formulaire.reset();
-  mettreAJourAffichage();
+  enregistrerEtAfficher();
+}
+
+// Nouvel identifiant = plus grand id existant + 1
+function genererId() {
+  return livres.reduce((max, l) => Math.max(max, l.id), 0) + 1;
 }
 
 // ---------- Écouteurs d'événements ----------
@@ -160,6 +252,7 @@ filtreCategorie.addEventListener("change", mettreAJourAffichage);
 filtreDisponibles.addEventListener("change", mettreAJourAffichage);
 selectTri.addEventListener("change", mettreAJourAffichage);
 formulaire.addEventListener("submit", ajouterLivre);
+boutonReinitialiser.addEventListener("click", reinitialiserLivres);
 
 // Premier affichage au chargement de la page
 mettreAJourAffichage();
